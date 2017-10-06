@@ -4,12 +4,24 @@
 
   // do not change below this line
   var PARTNER = "INSALES.DADATA";
+  
+  function clearField(id) {
+    var $field = $("#" + id);
+    $field.val("");
+    $field.parent().addClass("co-input--empty_nested");
+  }
+  
+  function showField(id, value) {
+    var $field = $("#" + id);
+    $field.val(value);
+    $field.parent().removeClass("co-input--empty_nested");
+  }
 
   function clearParty() {
-    $("#client_juridical_address").val("");
-    $("#client_inn").val("");
-    $("#client_kpp").val("");
-    $("#client_ogrn").val("");
+    clearField("client_juridical_address");
+    clearField("client_inn");
+    clearField("client_kpp");
+    clearField("client_ogrn");
   }
   
   function showParty(suggestion) {
@@ -17,10 +29,10 @@
     var address = party.address.data ? 
         party.address.data.postal_code + ", " + party.address.value :
         party.address.value;
-    $("#client_juridical_address").val(address);
-    $("#client_inn").val(party.inn);
-    $("#client_kpp").val(party.kpp);
-    $("#client_ogrn").val(party.ogrn);
+    showField("client_juridical_address", address);
+    showField("client_inn", party.inn);
+    showField("client_kpp", party.kpp);
+    showField("client_ogrn", party.ogrn);
   }
 
   function initParty() {
