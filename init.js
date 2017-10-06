@@ -35,11 +35,13 @@
   
   function clearBank() {
     $("#client_bik").val("");
+    $("#client_correspondent_account").val("");
   }
   
   function showBank(suggestion) {
     var bank = suggestion.data;
     $("#client_bik").val(bank.bic);
+    $("#client_correspondent_account").val(bank.correspondent_account);
   }
 
   function initBank() {
