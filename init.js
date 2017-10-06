@@ -46,14 +46,14 @@
   }
   
   function clearBank() {
-    $("#client_bik").val("");
-    $("#client_correspondent_account").val("");
+    clearField("client_bik");
+    clearField("client_correspondent_account");
   }
   
   function showBank(suggestion) {
     var bank = suggestion.data;
-    $("#client_bik").val(bank.bic);
-    $("#client_correspondent_account").val(bank.correspondent_account);
+    showField("client_bik", bank.bic);
+    showField("client_correspondent_account", bank.correspondent_account);
   }
 
   function initBank() {
