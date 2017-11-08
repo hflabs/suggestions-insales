@@ -70,11 +70,61 @@
     showField("shipping_address_zip", address.postal_code);
   }
   
+  function listenCityChange() {
+    var $cityKladr = $("#shipping_address_full_locality_name");
+    $cityKladr.on("change", onCityChange);
+    // initial check on page load
+    onCityChange();
+  }
+  
+  function onCityChange() {
+    var kladrSelector = "[name='shipping_address[kladr_json]']";
+    var kladr_id = null;
+    try {
+      var kladr = JSON.parse($(kladrSelector).val());
+      kladr_id = kladr.kladr_code || kladr.code;
+    } catch (e) {
+      // do nothing
+    }
+    enforceCity(kladr_id);
+  }
+  
+  function enforceCity(kladr_id) {
+    clearField("shipping_address_address");
+    clearField("shipping_address_zip");
+    var sgt = $("#shipping_address_address").suggestions();
+    if (kladr_id) {
+      setLocations(sgt, kladr_id);
+    } else {
+      clearLocations(sgt);
+    }
+  }
+  
+  function setLocations(sgt, kladr_id) {
+    sgt.setOptions({
+      constraints: {
+        locations: { kladr_id: kladr_id }
+      },
+      restrict_value: true
+    });
+  }
+  
+  function clearLocations(sgt) {
+    sgt.setOptions({
+      constraints: {
+        locations: null
+      },
+      restrict_value: false
+    });
+  }
+
   $(function () {
-    init("client_name", "PARTY", showParty, clearParty);
+    init("tabs-organization #client_name", "PARTY", showParty, clearParty);
+    init("tabs-person #client_name", "NAME", pass, pass);
     init("client_bank_name", "BANK", showBank, clearBank);
     init("shipping_address_address", "ADDRESS", showAddress, clearAddress);
+    listenCityChange();
     init("client_email", "EMAIL", pass, pass, { suggest_local: false });
   });
-    
+  
 }(window.jQuery, window.DADATA_TOKEN))
