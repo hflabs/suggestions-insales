@@ -203,6 +203,9 @@
       suggestions.clearField("#shipping_address_address");
       suggestions.clearField("#shipping_address_zip");
       var sgt = $("#shipping_address_address").suggestions();
+      if (!sgt) {
+        return;
+      }
       if (kladr_id) {
         suggestions.setLocations(sgt, kladr_id);
       } else {
