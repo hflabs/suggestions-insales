@@ -9,7 +9,7 @@
   var CSS_PATH = BASE_PATH + VERSION +"/dist/css/suggestions.min.css";
   var JS_PATH = BASE_PATH + VERSION +"/dist/js/jquery.suggestions.min.js";
 
-  var utils = {
+  var Utils = {
     loadJS: function (path, callback) {
       var script = document.createElement('script');
       script.type = 'text/javascript';
@@ -35,7 +35,7 @@
     pass: function () {}
   };1
 
-  var suggestions = {
+  var Suggestions = {
     init: function (selector, type, showFunc, clearFunc, options) {
       var plugin = $(selector).suggestions({
         token: TOKEN,
@@ -80,18 +80,18 @@
     }
   };
 
-  var name = {
+  var Name = {
     init: function (selector) {
       if ($("#client_surname").length) {
         // granular
-        name.initGranular(
+        Name.initGranular(
           $("#client_surname"),
           $(selector),
           $("#client_middlename")
         );
       } else {
         // single field
-        suggestions.init(selector, "NAME", utils.pass, utils.pass);
+        Suggestions.init(selector, "NAME", Utils.pass, Utils.pass);
       }
     },
     
@@ -115,7 +115,7 @@
               parts: [fioParts[index]]
           },
           onSearchStart: function(params) {
-              params.gender = name.isGenderKnown.call(self, $el) ? self.gender : "UNKNOWN";
+              params.gender = Name.isGenderKnown.call(self, $el) ? self.gender : "UNKNOWN";
           },
           onSelect: function(suggestion) {
               self.gender = suggestion.data.gender;
@@ -139,12 +139,12 @@
     }
   };
 
-  var party = {
+  var Party = {
     clear: function () {
-      suggestions.clearField("#client_juridical_address");
-      suggestions.clearField("#client_inn");
-      suggestions.clearField("#client_kpp");
-      suggestions.clearField("#client_ogrn");
+      Suggestions.clearField("#client_juridical_address");
+      Suggestions.clearField("#client_inn");
+      Suggestions.clearField("#client_kpp");
+      Suggestions.clearField("#client_ogrn");
     },
     
     show: function (suggestion) {
@@ -152,82 +152,114 @@
       var address = party.address.data ? 
           party.address.data.postal_code + ", " + party.address.value :
           party.address.value;
-      suggestions.showField("#client_juridical_address", address);
-      suggestions.showField("#client_inn", party.inn);
-      suggestions.showField("#client_kpp", party.kpp);
-      suggestions.showField("#client_ogrn", party.ogrn);
+      Suggestions.showField("#client_juridical_address", address);
+      Suggestions.showField("#client_inn", party.inn);
+      Suggestions.showField("#client_kpp", party.kpp);
+      Suggestions.showField("#client_ogrn", party.ogrn);
     }
   };
   
-  var bank = {
+  var Bank = {
     clear: function () {
-      suggestions.clearField("#client_bik");
-      suggestions.clearField("#client_correspondent_account");
+      Suggestions.clearField("#client_bik");
+      Suggestions.clearField("#client_correspondent_account");
     },
     
     show: function (suggestion) {
       var bank = suggestion.data;
-      suggestions.showField("#client_bik", bank.bic);
-      suggestions.showField("#client_correspondent_account", bank.correspondent_account);
+      Suggestions.showField("#client_bik", bank.bic);
+      Suggestions.showField("#client_correspondent_account", bank.correspondent_account);
     }
   };
 
-  var address = {
+  var Address = {
+    ADDRESS_SELECTOR: "#shipping_address_address",
+    COUNTRY_SELECTOR: "#shipping_address_country",
+    ZIP_SELECTOR: "#shipping_address_zip",
+    KLADR_SELECTOR: "[name='shipping_address[kladr_json]']",
+
+    init: function() {
+      Suggestions.init(Address.ADDRESS_SELECTOR, "ADDRESS", Address.show, Address.clear);
+      Address.listenCountryChange();
+    },
+
     clear: function () {
-      suggestions.clearField("#shipping_address_zip");
+      Suggestions.clearField(Address.ZIP_SELECTOR);
     },
     
     show: function (suggestion) {
       var address = suggestion.data;
-      suggestions.showField("#shipping_address_zip", address.postal_code);
+      Suggestions.showField(Address.ZIP_SELECTOR, address.postal_code);
+    },
+
+    listenCountryChange: function () {
+      var $country = $(Address.COUNTRY_SELECTOR);
+      $country.on("change", function(e) {
+        Address.onCountryChange(e.target.value)
+      });
+      Address.onCountryChange($country.val());
+    },
+
+    onCountryChange: function (countryCode) {
+      var sgt = $(Address.ADDRESS_SELECTOR).suggestions();
+      if (!sgt || !countryCode) {
+        return;
+      }
+      if (countryCode === "RU") {
+        sgt.enable();
+      } else {
+        Suggestions.clearLocations(sgt);
+        sgt.clear();
+        sgt.disable();
+        Address.clear();
+      }
     },
       
     listenCityChange: function (citySelector) {
       var $city = $(citySelector);
-      $city.on("change", address.onCityChange);
+      $city.on("change", Address.onCityChange);
     },
     
     onCityChange: function (options) {
-      var kladrSelector = "[name='shipping_address[kladr_json]']";
       var kladr_id = null;
       try {
-        var kladr = JSON.parse($(kladrSelector).val());
+        var kladr = JSON.parse($(Address.KLADR_SELECTOR).val());
         kladr_id = kladr.kladr_code || kladr.code;
       } catch (e) {
         // do nothing
       }
-      address.enforceCity(kladr_id, options);
+      Address.enforceCity(kladr_id, options);
     },
     
     enforceCity: function (kladr_id, options) {
       var options = options || {};
       if (!options.keepOldValue) {
-        suggestions.clearField("#shipping_address_address");
-        suggestions.clearField("#shipping_address_zip");
+        Suggestions.clearField(Address.ADDRESS_SELECTOR);
+        Suggestions.clearField(Address.ZIP_SELECTOR);
       }
-      var sgt = $("#shipping_address_address").suggestions();
+      var sgt = $(Address.ADDRESS_SELECTOR).suggestions();
       if (!sgt) {
         return;
       }
       if (kladr_id) {
-        suggestions.setLocations(sgt, kladr_id);
+        Suggestions.setLocations(sgt, kladr_id);
       } else {
-        suggestions.clearLocations(sgt);
+        Suggestions.clearLocations(sgt);
       }
     }
   };
 
-  var suggestify = {
+  var Suggestify = {
     init: function () {
-      var initFunc = suggestify.checkVersion();
+      var initFunc = Suggestify.checkVersion();
       initFunc();
     },
   
     checkVersion: function () {
       if ($("html").hasClass("insales-checkout2") || $(".checkout-v2-wrapper").length) {
-        return suggestify.initV2;
+        return Suggestify.initV2;
       } else {
-        return suggestify.initV1;
+        return Suggestify.initV1;
       }
     },
 
@@ -240,47 +272,47 @@
     },
     
     initV1: function() {
-      if (suggestify.isParty()) {
-        suggestions.init("#client_name", "PARTY", party.show, party.clear);
+      if (Suggestify.isParty()) {
+        Suggestions.init("#client_name", "PARTY", Party.show, Party.clear);
       } else {
-        name.init("#client_name");
+        Name.init("#client_name");
       }
-      suggestions.init("#client_bank_name", "BANK", bank.show, bank.clear);
-      suggestions.init("#shipping_address_address", "ADDRESS", address.show, address.clear);
-      suggestions.init("#client_email", "EMAIL", utils.pass, utils.pass, { suggest_local: false });
-      suggestions.init("[name='email']", "EMAIL", utils.pass, utils.pass, { suggest_local: false });
-      address.listenCityChange("#shipping_address_city");
-      address.listenCityChange("#shipping_address_state");    
-      address.onCityChange({ keepOldValue: true });
+      Suggestions.init("#client_bank_name", "BANK", Bank.show, Bank.clear);
+      Suggestions.init("#client_email", "EMAIL", Utils.pass, Utils.pass, { suggest_local: false });
+      Suggestions.init("[name='email']", "EMAIL", Utils.pass, Utils.pass, { suggest_local: false });
+      Address.init();
+      Address.listenCityChange("#shipping_address_city");
+      Address.listenCityChange("#shipping_address_state");    
+      Address.onCityChange({ keepOldValue: true });
     },
     
     initV2: function () {
-      if (suggestify.isAccountPage()) {
+      if (Suggestify.isAccountPage()) {
         // specific for account
-        if (suggestify.isParty()) {
-          suggestions.init("#client_name", "PARTY", party.show, party.clear);    
+        if (Suggestify.isParty()) {
+          Suggestions.init("#client_name", "PARTY", Party.show, Party.clear);    
         } else {
-          name.init("#client_name");    
+          Name.init("#client_name");    
         }
       } else {
         // specific for checkout
-        suggestions.init("#tabs-organization #client_name", "PARTY", party.show, party.clear);
-        name.init("#tabs-person #client_name");
+        Suggestions.init("#tabs-organization #client_name", "PARTY", Party.show, Party.clear);
+        Name.init("#tabs-person #client_name");
       }
       // common
-      suggestions.init("#client_bank_name", "BANK", bank.show, bank.clear);
-      suggestions.init("#shipping_address_address", "ADDRESS", address.show, address.clear);
-      suggestions.init("[name='client[email]']", "EMAIL", utils.pass, utils.pass, { suggest_local: false });
-      suggestions.init("[name='email']", "EMAIL", utils.pass, utils.pass, { suggest_local: false });
-      address.listenCityChange("#shipping_address_full_locality_name");
-      address.onCityChange({ keepOldValue: true });
+      Suggestions.init("#client_bank_name", "BANK", Bank.show, Bank.clear);
+      Suggestions.init("[name='client[email]']", "EMAIL", Utils.pass, Utils.pass, { suggest_local: false });
+      Suggestions.init("[name='email']", "EMAIL", Utils.pass, Utils.pass, { suggest_local: false });
+      Address.init();
+      Address.listenCityChange("#shipping_address_full_locality_name");
+      Address.onCityChange({ keepOldValue: true });
     }
   };
 
   $(function () {
-    utils.loadCSS(CSS_PATH);
-    utils.loadJS(JS_PATH, function() {
-      suggestify.init();
+    Utils.loadCSS(CSS_PATH);
+    Utils.loadJS(JS_PATH, function() {
+      Suggestify.init();
     });
   });
 
