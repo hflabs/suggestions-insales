@@ -187,7 +187,7 @@
       $city.on("change", address.onCityChange);
     },
     
-    onCityChange: function () {
+    onCityChange: function (options) {
       var kladrSelector = "[name='shipping_address[kladr_json]']";
       var kladr_id = null;
       try {
@@ -196,12 +196,15 @@
       } catch (e) {
         // do nothing
       }
-      address.enforceCity(kladr_id);
+      address.enforceCity(kladr_id, options);
     },
     
-    enforceCity: function (kladr_id) {
-      suggestions.clearField("#shipping_address_address");
-      suggestions.clearField("#shipping_address_zip");
+    enforceCity: function (kladr_id, options) {
+      var options = options || {};
+      if (!options.keepOldValue) {
+        suggestions.clearField("#shipping_address_address");
+        suggestions.clearField("#shipping_address_zip");
+      }
       var sgt = $("#shipping_address_address").suggestions();
       if (!sgt) {
         return;
@@ -221,15 +224,23 @@
     },
   
     checkVersion: function () {
-      if ($("#tabs-person").length) {
+      if ($("html").hasClass("insales-checkout2") || $(".checkout-v2-wrapper").length) {
         return suggestify.initV2;
       } else {
         return suggestify.initV1;
       }
     },
+
+    isAccountPage: function() {
+        return $("#new_client").length || $("#contacts").length;
+    },
+
+    isParty: function() {
+        return $("#client_inn").is(":visible");
+    },
     
     initV1: function() {
-      if ($("#client_inn").length) {
+      if (suggestify.isParty()) {
         suggestions.init("#client_name", "PARTY", party.show, party.clear);
       } else {
         name.init("#client_name");
@@ -240,18 +251,29 @@
       suggestions.init("[name='email']", "EMAIL", utils.pass, utils.pass, { suggest_local: false });
       address.listenCityChange("#shipping_address_city");
       address.listenCityChange("#shipping_address_state");    
-      address.onCityChange();
+      address.onCityChange({ keepOldValue: true });
     },
     
     initV2: function () {
-      suggestions.init("#tabs-organization #client_name", "PARTY", party.show, party.clear);
-      name.init("#tabs-person #client_name");
+      if (suggestify.isAccountPage()) {
+        // specific for account
+        if (suggestify.isParty()) {
+          suggestions.init("#client_name", "PARTY", party.show, party.clear);    
+        } else {
+          name.init("#client_name");    
+        }
+      } else {
+        // specific for checkout
+        suggestions.init("#tabs-organization #client_name", "PARTY", party.show, party.clear);
+        name.init("#tabs-person #client_name");
+      }
+      // common
       suggestions.init("#client_bank_name", "BANK", bank.show, bank.clear);
       suggestions.init("#shipping_address_address", "ADDRESS", address.show, address.clear);
-      suggestions.init("#client_email", "EMAIL", utils.pass, utils.pass, { suggest_local: false });
+      suggestions.init("[name='client[email]']", "EMAIL", utils.pass, utils.pass, { suggest_local: false });
       suggestions.init("[name='email']", "EMAIL", utils.pass, utils.pass, { suggest_local: false });
       address.listenCityChange("#shipping_address_full_locality_name");
-      address.onCityChange();
+      address.onCityChange({ keepOldValue: true });
     }
   };
 
