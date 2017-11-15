@@ -37,16 +37,19 @@
 
   var Suggestions = {
     init: function (selector, type, showFunc, clearFunc, options) {
-      var plugin = $(selector).suggestions({
-        token: TOKEN,
-        partner: PARTNER,
-        type: type,
-        onSelect: showFunc,
-        onSelectNothing: clearFunc
-      }).suggestions();
-      if (plugin && options) {
-        plugin.setOptions(options);
-      }
+      $(selector).each(function(idx, elem) {
+        var plugin = $(elem).suggestions({
+          token: TOKEN,
+          partner: PARTNER,
+          type: type,
+          onSelect: showFunc,
+          onSelectNothing: clearFunc
+        }).suggestions();
+        if (plugin && options) {
+          plugin.setOptions(options);
+        }
+      });
+      
     },
 
     clearField: function (selector) {
