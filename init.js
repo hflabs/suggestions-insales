@@ -256,7 +256,7 @@
     },
   
     checkVersion: function () {
-      if ($("html").hasClass("insales-checkout2") || $(".checkout-v2-wrapper").length) {
+      if ($("html").hasClass("insales-checkout2") || $("#order_form").data("checkout2")) {
         return Suggestify.initV2;
       } else {
         return Suggestify.initV1;
