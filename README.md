@@ -12,7 +12,7 @@
 <script type="text/javascript">
   window.DADATA_TOKEN = "ВАШ_API_КЛЮЧ";
 </script>
-<script type="text/javascript" src="https://cdn.rawgit.com/hflabs/suggestions-insales/0.4.1/init.js"></script>
+<script type="text/javascript" src="https://cdn.rawgit.com/hflabs/suggestions-insales/0.5.0/init.js"></script>
 <!-- /dadata.ru -->
 ```
 Вместо `ВАШ_API_КЛЮЧ` укажите ваш API-ключ на DaData.ru. Чтобы получить ключ,  [зарегистрируйтесь](https://dadata.ru/#registration_popup) и сгенерируйте ключ в [личном кабинете](https://dadata.ru/profile/#info).
