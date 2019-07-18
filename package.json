@@ -1,0 +1,23 @@
+{
+    "name": "suggestions-insales",
+    "version": "0.6.0",
+    "description": "DaData.ru suggestions InSales module",
+    "main": "init.js",
+    "scripts": {
+        "test": "echo \"Nope\" && exit 0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/hflabs/suggestions-insales.git"
+    },
+    "keywords": [
+        "dadata",
+        "insales"
+    ],
+    "author": "HFLabs",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/hflabs/suggestions-insales/issues"
+    },
+    "homepage": "https://github.com/hflabs/suggestions-insales#readme"
+}
