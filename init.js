@@ -1,6 +1,6 @@
 "use strict";
 
-(function($, TOKEN) {
+(function(jQuery, TOKEN) {
     // do not change below this line
     var PARTNER = "INSALES.DADATA";
     var VERSION = "latest";
@@ -37,8 +37,8 @@
 
     var Suggestions = {
         init: function(selector, type, showFunc, clearFunc, options) {
-            $(selector).each(function(idx, elem) {
-                var plugin = $(elem)
+            jQuery(selector).each(function(idx, elem) {
+                var plugin = jQuery(elem)
                     .suggestions({
                         token: TOKEN,
                         partner: PARTNER,
@@ -54,13 +54,13 @@
         },
 
         clearField: function(selector) {
-            var $field = $(selector);
+            var $field = jQuery(selector);
             $field.val("");
             $field.parent().addClass("co-input--empty_nested");
         },
 
         showField: function(selector, value) {
-            var $field = $(selector);
+            var $field = jQuery(selector);
             $field.val(value);
             $field.parent().removeClass("co-input--empty_nested");
         },
@@ -86,12 +86,12 @@
 
     var Name = {
         init: function(selector) {
-            if ($("#client_surname").length) {
+            if (jQuery("#client_surname").length) {
                 // granular
                 Name.initGranular(
-                    $("#client_surname"),
-                    $(selector),
-                    $("#client_middlename")
+                    jQuery("#client_surname"),
+                    jQuery(selector),
+                    jQuery("#client_middlename")
                 );
             } else {
                 // single field
@@ -215,7 +215,7 @@
         },
 
         listenCountryChange: function() {
-            var $country = $(Address.COUNTRY_SELECTOR);
+            var $country = jQuery(Address.COUNTRY_SELECTOR);
             $country.on("change", function(e) {
                 Address.onCountryChange(e.target.value);
             });
@@ -223,7 +223,7 @@
         },
 
         onCountryChange: function(countryCode) {
-            var sgt = $(Address.ADDRESS_SELECTOR).suggestions();
+            var sgt = jQuery(Address.ADDRESS_SELECTOR).suggestions();
             if (!sgt || !countryCode) {
                 return;
             }
@@ -238,14 +238,14 @@
         },
 
         listenCityChange: function(citySelector) {
-            var $city = $(citySelector);
+            var $city = jQuery(citySelector);
             $city.on("change", Address.onCityChange);
         },
 
         onCityChange: function(options) {
             var kladr_id = null;
             try {
-                var kladr = JSON.parse($(Address.KLADR_SELECTOR).val());
+                var kladr = JSON.parse(jQuery(Address.KLADR_SELECTOR).val());
                 kladr_id = kladr.kladr_code || kladr.code;
             } catch (e) {
                 // do nothing
@@ -259,7 +259,7 @@
                 Suggestions.clearField(Address.ADDRESS_SELECTOR);
                 Suggestions.clearField(Address.ZIP_SELECTOR);
             }
-            var sgt = $(Address.ADDRESS_SELECTOR).suggestions();
+            var sgt = jQuery(Address.ADDRESS_SELECTOR).suggestions();
             if (!sgt) {
                 return;
             }
@@ -279,8 +279,8 @@
 
         checkVersion: function() {
             if (
-                $("html").hasClass("insales-checkout2") ||
-                $("#order_form").data("checkout2")
+                jQuery("html").hasClass("insales-checkout2") ||
+                jQuery("#order_form").data("checkout2")
             ) {
                 return Suggestify.initV2;
             } else {
@@ -289,11 +289,11 @@
         },
 
         isAccountPage: function() {
-            return $("#new_client").length || $("#contacts").length;
+            return jQuery("#new_client").length || jQuery("#contacts").length;
         },
 
         isParty: function() {
-            return $("#client_inn").is(":visible");
+            return jQuery("#client_inn").is(":visible");
         },
 
         initV1: function() {
@@ -379,7 +379,7 @@
         }
     };
 
-    $(function() {
+    jQuery(function() {
         Utils.loadCSS(CSS_PATH);
         Utils.loadJS(JS_PATH, function() {
             Suggestify.init();
