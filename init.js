@@ -15,13 +15,9 @@
             script.async = true;
             script.src = path;
             if (callback) {
-                script.addEventListener(
-                    "load",
-                    function(e) {
-                        callback(null, e);
-                    },
-                    false
-                );
+                script.onload = function() {
+                    callback();
+                };
             }
             var s = document.getElementsByTagName("script")[0];
             s.parentNode.insertBefore(script, s);
