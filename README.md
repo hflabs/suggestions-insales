@@ -17,7 +17,7 @@
 <!-- /dadata.ru -->
 ```
 
-Вместо `ВАШ_API_КЛЮЧ` укажите ваш API-ключ на DaData.ru. Чтобы получить ключ, [зарегистрируйтесь](https://dadata.ru/#registration_popup) и сгенерируйте ключ в [личном кабинете](https://dadata.ru/profile/#info).
+Вместо `ВАШ_API_КЛЮЧ` укажите ваш API-ключ на DaData.ru. Чтобы получить ключ, [зарегистрируйтесь](https://dadata.ru/#registration_popup) и скопируйте ключ из [личного кабинета](https://dadata.ru/profile/#info).
 
 После регистрации подтвердите e-mail адрес, иначе подсказки не будут работать.
 
