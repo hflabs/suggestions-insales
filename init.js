@@ -1,6 +1,6 @@
 "use strict";
 
-(function(jQuery, TOKEN) {
+(function (TOKEN) {
     // do not change below this line
     var PARTNER = "INSALES.DADATA";
     var VERSION = "latest";
@@ -9,13 +9,13 @@
     var JS_PATH = BASE_PATH + VERSION + "/dist/js/jquery.suggestions.min.js";
 
     var Utils = {
-        loadJS: function(path, callback) {
+        loadJS: function (path, callback) {
             var script = document.createElement("script");
             script.type = "text/javascript";
             script.async = true;
             script.src = path;
             if (callback) {
-                script.onload = function() {
+                script.onload = function () {
                     callback();
                 };
             }
@@ -23,7 +23,7 @@
             s.parentNode.insertBefore(script, s);
         },
 
-        loadCSS: function(path) {
+        loadCSS: function (path) {
             var css = document.createElement("link");
             css.setAttribute("rel", "stylesheet");
             css.setAttribute("type", "text/css");
@@ -31,20 +31,20 @@
             document.getElementsByTagName("head")[0].appendChild(css);
         },
 
-        pass: function() {}
+        pass: function () {},
     };
     1;
 
     var Suggestions = {
-        init: function(selector, type, showFunc, clearFunc, options) {
-            jQuery(selector).each(function(idx, elem) {
+        init: function (selector, type, showFunc, clearFunc, options) {
+            jQuery(selector).each(function (idx, elem) {
                 var plugin = jQuery(elem)
                     .suggestions({
                         token: TOKEN,
                         partner: PARTNER,
                         type: type,
                         onSelect: showFunc,
-                        onSelectNothing: clearFunc
+                        onSelectNothing: clearFunc,
                     })
                     .suggestions();
                 if (plugin && options) {
@@ -53,39 +53,39 @@
             });
         },
 
-        clearField: function(selector) {
+        clearField: function (selector) {
             var $field = jQuery(selector);
             $field.val("");
             $field.parent().addClass("co-input--empty_nested");
         },
 
-        showField: function(selector, value) {
+        showField: function (selector, value) {
             var $field = jQuery(selector);
             $field.val(value);
             $field.parent().removeClass("co-input--empty_nested");
         },
 
-        setLocations: function(sgt, kladr_id) {
+        setLocations: function (sgt, kladr_id) {
             sgt.setOptions({
                 constraints: {
-                    locations: { kladr_id: kladr_id }
+                    locations: { kladr_id: kladr_id },
                 },
-                restrict_value: true
+                restrict_value: true,
             });
         },
 
-        clearLocations: function(sgt) {
+        clearLocations: function (sgt) {
             sgt.setOptions({
                 constraints: {
-                    locations: null
+                    locations: null,
                 },
-                restrict_value: false
+                restrict_value: false,
             });
-        }
+        },
     };
 
     var Name = {
-        init: function(selector) {
+        init: function (selector) {
             if (jQuery("#client_surname").length) {
                 // granular
                 Name.initGranular(
@@ -99,15 +99,15 @@
             }
         },
 
-        initGranular: function($surname, $name, $patronymic) {
+        initGranular: function ($surname, $name, $patronymic) {
             var fioParts = ["SURNAME", "NAME", "PATRONYMIC"];
             var self = {
                 $surname: $surname,
                 $name: $name,
                 $patronymic: $patronymic,
-                gender: "UNKNOWN"
+                gender: "UNKNOWN",
             };
-            $.each([$surname, $name, $patronymic], function(index, $el) {
+            $.each([$surname, $name, $patronymic], function (index, $el) {
                 var sgt = $el.suggestions({
                     token: TOKEN,
                     partner: PARTNER,
@@ -116,21 +116,21 @@
                     hint: "",
                     noCache: true,
                     params: {
-                        parts: [fioParts[index]]
+                        parts: [fioParts[index]],
                     },
-                    onSearchStart: function(params) {
+                    onSearchStart: function (params) {
                         params.gender = Name.isGenderKnown.call(self, $el)
                             ? self.gender
                             : "UNKNOWN";
                     },
-                    onSelect: function(suggestion) {
+                    onSelect: function (suggestion) {
                         self.gender = suggestion.data.gender;
-                    }
+                    },
                 });
             });
         },
 
-        isGenderKnown: function($el) {
+        isGenderKnown: function ($el) {
             var self = this;
             var surname = self.$surname.val(),
                 name = self.$name.val(),
@@ -150,18 +150,18 @@
             } else {
                 return true;
             }
-        }
+        },
     };
 
     var Party = {
-        clear: function() {
+        clear: function () {
             Suggestions.clearField("#client_juridical_address");
             Suggestions.clearField("#client_inn");
             Suggestions.clearField("#client_kpp");
             Suggestions.clearField("#client_ogrn");
         },
 
-        show: function(suggestion) {
+        show: function (suggestion) {
             var party = suggestion.data;
             var address = party.address.data
                 ? party.address.data.postal_code + ", " + party.address.value
@@ -170,23 +170,23 @@
             Suggestions.showField("#client_inn", party.inn);
             Suggestions.showField("#client_kpp", party.kpp);
             Suggestions.showField("#client_ogrn", party.ogrn);
-        }
+        },
     };
 
     var Bank = {
-        clear: function() {
+        clear: function () {
             Suggestions.clearField("#client_bik");
             Suggestions.clearField("#client_correspondent_account");
         },
 
-        show: function(suggestion) {
+        show: function (suggestion) {
             var bank = suggestion.data;
             Suggestions.showField("#client_bik", bank.bic);
             Suggestions.showField(
                 "#client_correspondent_account",
                 bank.correspondent_account
             );
-        }
+        },
     };
 
     var Address = {
@@ -195,7 +195,7 @@
         ZIP_SELECTOR: "#shipping_address_zip",
         KLADR_SELECTOR: "[name='shipping_address[kladr_json]']",
 
-        init: function() {
+        init: function () {
             Suggestions.init(
                 Address.ADDRESS_SELECTOR,
                 "ADDRESS",
@@ -205,24 +205,24 @@
             Address.listenCountryChange();
         },
 
-        clear: function() {
+        clear: function () {
             Suggestions.clearField(Address.ZIP_SELECTOR);
         },
 
-        show: function(suggestion) {
+        show: function (suggestion) {
             var address = suggestion.data;
             Suggestions.showField(Address.ZIP_SELECTOR, address.postal_code);
         },
 
-        listenCountryChange: function() {
+        listenCountryChange: function () {
             var $country = jQuery(Address.COUNTRY_SELECTOR);
-            $country.on("change", function(e) {
+            $country.on("change", function (e) {
                 Address.onCountryChange(e.target.value);
             });
             Address.onCountryChange($country.val());
         },
 
-        onCountryChange: function(countryCode) {
+        onCountryChange: function (countryCode) {
             var sgt = jQuery(Address.ADDRESS_SELECTOR).suggestions();
             if (!sgt || !countryCode) {
                 return;
@@ -237,12 +237,12 @@
             }
         },
 
-        listenCityChange: function(citySelector) {
+        listenCityChange: function (citySelector) {
             var $city = jQuery(citySelector);
             $city.on("change", Address.onCityChange);
         },
 
-        onCityChange: function(options) {
+        onCityChange: function (options) {
             var kladr_id = null;
             try {
                 var kladr = JSON.parse(jQuery(Address.KLADR_SELECTOR).val());
@@ -253,7 +253,7 @@
             Address.enforceCity(kladr_id, options);
         },
 
-        enforceCity: function(kladr_id, options) {
+        enforceCity: function (kladr_id, options) {
             var options = options || {};
             if (!options.keepOldValue) {
                 Suggestions.clearField(Address.ADDRESS_SELECTOR);
@@ -268,16 +268,16 @@
             } else {
                 Suggestions.clearLocations(sgt);
             }
-        }
+        },
     };
 
     var Suggestify = {
-        init: function() {
+        init: function () {
             var initFunc = Suggestify.checkVersion();
             initFunc();
         },
 
-        checkVersion: function() {
+        checkVersion: function () {
             if (
                 jQuery("html").hasClass("insales-checkout2") ||
                 jQuery("#order_form").data("checkout2")
@@ -288,15 +288,15 @@
             }
         },
 
-        isAccountPage: function() {
+        isAccountPage: function () {
             return jQuery("#new_client").length || jQuery("#contacts").length;
         },
 
-        isParty: function() {
+        isParty: function () {
             return jQuery("#client_inn").is(":visible");
         },
 
-        initV1: function() {
+        initV1: function () {
             if (Suggestify.isParty()) {
                 Suggestions.init(
                     "#client_name",
@@ -314,7 +314,7 @@
                 Bank.clear
             );
             Suggestions.init("#client_email", "EMAIL", Utils.pass, Utils.pass, {
-                suggest_local: false
+                suggest_local: false,
             });
             Suggestions.init(
                 "[name='email']",
@@ -329,7 +329,7 @@
             Address.onCityChange({ keepOldValue: true });
         },
 
-        initV2: function() {
+        initV2: function () {
             if (Suggestify.isAccountPage()) {
                 // specific for account
                 if (Suggestify.isParty()) {
@@ -376,13 +376,13 @@
             Address.init();
             Address.listenCityChange("#shipping_address_full_locality_name");
             Address.onCityChange({ keepOldValue: true });
-        }
+        },
     };
 
-    jQuery(function() {
+    jQuery(function () {
         Utils.loadCSS(CSS_PATH);
-        Utils.loadJS(JS_PATH, function() {
+        Utils.loadJS(JS_PATH, function () {
             Suggestify.init();
         });
     });
-})(window.jQuery, window.DADATA_TOKEN);
+})(window.DADATA_TOKEN);
