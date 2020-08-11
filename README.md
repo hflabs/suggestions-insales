@@ -13,7 +13,7 @@
 <script>
   window.DADATA_TOKEN = "ВАШ_API_КЛЮЧ";
 </script>
-<script src="https://unpkg.com/suggestions-insales@0.6.3/init.js"></script>
+<script src="https://unpkg.com/suggestions-insales@0.6.4/init.js"></script>
 <!-- /dadata.ru -->
 ```
 
