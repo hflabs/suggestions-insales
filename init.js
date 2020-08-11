@@ -190,18 +190,23 @@
     };
 
     var Address = {
-        ADDRESS_SELECTOR: "#shipping_address_address",
+        ADDRESS_SELECTORS: [
+            "#shipping_address_address",
+            "#shipping_address_street",
+        ],
         COUNTRY_SELECTOR: "#shipping_address_country",
         ZIP_SELECTOR: "#shipping_address_zip",
         KLADR_SELECTOR: "[name='shipping_address[kladr_json]']",
 
         init: function () {
-            Suggestions.init(
-                Address.ADDRESS_SELECTOR,
-                "ADDRESS",
-                Address.show,
-                Address.clear
-            );
+            Address.ADDRESS_SELECTORS.forEach(function (selector) {
+                Suggestions.init(
+                    selector,
+                    "ADDRESS",
+                    Address.show,
+                    Address.clear
+                );
+            });
             Address.listenCountryChange();
         },
 
@@ -223,18 +228,20 @@
         },
 
         onCountryChange: function (countryCode) {
-            var sgt = jQuery(Address.ADDRESS_SELECTOR).suggestions();
-            if (!sgt || !countryCode) {
-                return;
-            }
-            if (countryCode === "RU") {
-                sgt.enable();
-            } else {
-                Suggestions.clearLocations(sgt);
-                sgt.clear();
-                sgt.disable();
-                Address.clear();
-            }
+            Address.ADDRESS_SELECTORS.forEach(function (selector) {
+                var sgt = jQuery(selector).suggestions();
+                if (!sgt || !countryCode) {
+                    return;
+                }
+                if (countryCode === "RU") {
+                    sgt.enable();
+                } else {
+                    Suggestions.clearLocations(sgt);
+                    sgt.clear();
+                    sgt.disable();
+                    Address.clear();
+                }
+            });
         },
 
         listenCityChange: function (citySelector) {
@@ -255,19 +262,21 @@
 
         enforceCity: function (kladr_id, options) {
             var options = options || {};
-            if (!options.keepOldValue) {
-                Suggestions.clearField(Address.ADDRESS_SELECTOR);
-                Suggestions.clearField(Address.ZIP_SELECTOR);
-            }
-            var sgt = jQuery(Address.ADDRESS_SELECTOR).suggestions();
-            if (!sgt) {
-                return;
-            }
-            if (kladr_id) {
-                Suggestions.setLocations(sgt, kladr_id);
-            } else {
-                Suggestions.clearLocations(sgt);
-            }
+            Address.ADDRESS_SELECTORS.forEach(function (selector) {
+                if (!options.keepOldValue) {
+                    Suggestions.clearField(selector);
+                    Suggestions.clearField(Address.ZIP_SELECTOR);
+                }
+                var sgt = jQuery(selector).suggestions();
+                if (!sgt) {
+                    return;
+                }
+                if (kladr_id) {
+                    Suggestions.setLocations(sgt, kladr_id);
+                } else {
+                    Suggestions.clearLocations(sgt);
+                }
+            });
         },
     };
 
